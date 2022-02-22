@@ -1,7 +1,9 @@
 use std::collections::HashMap;
+use std::io::Read;
+use std::str::FromStr;
 
 struct Todolist {
-    mapping: HashMap<String, bh>,    // Rust's builtin HashMap object, stores key and value pairs
+    mapping: HashMap<String, bool>,    // Rust's builtin HashMap object, stores key and value pairs
 }
 
 impl Todolist {
@@ -18,7 +20,8 @@ impl Todolist {
             .map(|line| line.splitn(2, '\t').collect::<Vec<&str>>())
             .map(|v| (v[0], v[1]))
             .map(|(k, v)| (String::from(k), bool::from_str(v).unwrap()))
-        Ok(Todolist { map })
+            .collect();
+        Ok(Todolist { mapping })
     }
 
     fn insert(&mut self, key: String) {
@@ -57,6 +60,6 @@ fn main() {
             Ok(_) => println!("Your to do list is saved!"),
             Err(why) =>  println!("An error occured while attempting to save your to do list: {}", why),
         }
-    }
+    };
     // println!("{:?}, {:?}", intention, action);
 }
