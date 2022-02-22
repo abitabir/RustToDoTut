@@ -42,6 +42,12 @@ impl Todolist {
     // so we 'enforce' save to be the last method to be used
     // you see in this case, how Rust's memory management creates stricter code which won't compile - consequently preventing human error during development
 
+    fn complete(&mut self, key: &String) -> Option<()> {
+        match self.mapping.get_mut(key) {
+            Some(v) => Some(*v = false),
+            None => None,
+        }
+    }
 }
 
 fn main() {
@@ -51,15 +57,24 @@ fn main() {
     // args is an iterator that returns the arguments inputted (from the CLI)
     // nth is the argument at position e.g in this case 1 - we start reading from 1 because at position 0 is the program itself
     // expect function panics if value is None
-    let mut todolist = Todolist {  // instationation
-        mapping: HashMap::new(),
-    };
+    // let mut todolist = Todolist {  // old instationation
+    //     mapping: HashMap::new(),
+    // };
+    let mut todolist = Todolist::new().expect("Initialisation of db failed =(");
     if action == "add" {
         todolist.insert(item);
         match todolist.save() {  // patternmatching
             Ok(_) => println!("Your to do list is saved!"),
             Err(why) =>  println!("An error occured while attempting to save your to do list: {}", why),
         }
-    };
+    } else if action == "complete" {
+        match todolist.complete(&item) {
+            None => println!("'{}' is isn't on the to do list", item),
+            Some(_) => match todolist.save() {
+                Ok(_) => println!("Your to do list is saved!"),
+                Err(why) =>  println!("An error occured while attempting to save your to do list: {}", why),
+            }
+        }
+    }
     // println!("{:?}, {:?}", intention, action);
 }
